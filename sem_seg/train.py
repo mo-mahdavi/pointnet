@@ -200,7 +200,8 @@ def train():
 def train_one_epoch(sess, ops, train_writer):
     """ ops: dict mapping from string to tf ops """
     is_training = True
-    
+    global train_data
+    global train_label
     log_string('----')
     train_data, train_label, _ = provider.shuffle_data(train_data[:,0:NUM_POINT,:], train_label) 
     
@@ -235,6 +236,9 @@ def train_one_epoch(sess, ops, train_writer):
         
 def eval_one_epoch(sess, ops, test_writer):
     """ ops: dict mapping from string to tf ops """
+    global test_data
+    global test_label
+    
     is_training = False
     total_correct = 0
     total_seen = 0
