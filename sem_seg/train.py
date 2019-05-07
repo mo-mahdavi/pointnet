@@ -202,7 +202,7 @@ def train_one_epoch(sess, ops, train_writer):
     is_training = True
     
     log_string('----')
-    #current_data, current_label, _ = provider.shuffle_data(train_data[:,0:NUM_POINT,:], train_label) 
+    train_data, train_label, _ = provider.shuffle_data(train_data[:,0:NUM_POINT,:], train_label) 
     
     file_size = train_data.shape[0]
     num_batches = file_size // BATCH_SIZE
@@ -243,30 +243,30 @@ def eval_one_epoch(sess, ops, test_writer):
     total_correct_class = [0 for _ in range(NUM_CLASSES)]
     
     log_string('----')
-    current_data = test_data[:,0:NUM_POINT,:]
-    current_label = np.squeeze(test_label)
+    test_data = test_data[:,0:NUM_POINT,:]
+    test_label = np.squeeze(test_label)
     
-    file_size = current_data.shape[0]
+    file_size = test_data.shape[0]
     num_batches = file_size // BATCH_SIZE
     
     for batch_idx in range(num_batches):
         start_idx = batch_idx * BATCH_SIZE
         end_idx = (batch_idx+1) * BATCH_SIZE
 
-        feed_dict = {ops['pointclouds_pl']: current_data[start_idx:end_idx, :, :],
-                     ops['labels_pl']: current_label[start_idx:end_idx],
+        feed_dict = {ops['pointclouds_pl']: test_data[start_idx:end_idx, :, :],
+                     ops['labels_pl']: test_label[start_idx:end_idx],
                      ops['is_training_pl']: is_training}
         summary, step, loss_val, pred_val = sess.run([ops['merged'], ops['step'], ops['loss'], ops['pred']],
                                       feed_dict=feed_dict)
         test_writer.add_summary(summary, step)
         pred_val = np.argmax(pred_val, 2)
-        correct = np.sum(pred_val == current_label[start_idx:end_idx])
+        correct = np.sum(pred_val == test_label[start_idx:end_idx])
         total_correct += correct
         total_seen += (BATCH_SIZE*NUM_POINT)
         loss_sum += (loss_val*BATCH_SIZE)
         for i in range(start_idx, end_idx):
             for j in range(NUM_POINT):
-                l = current_label[i, j]
+                l = test_label[i, j]
                 total_seen_class[l] += 1
                 total_correct_class[l] += (pred_val[i-start_idx, j] == l)
             
