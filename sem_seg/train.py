@@ -159,7 +159,7 @@ def train():
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
         config.allow_soft_placement = True
-        config.log_device_placement = True
+        #config.log_device_placement = True
         sess = tf.Session(config=config)
 
         # Add summary writers
@@ -201,6 +201,7 @@ def train_one_epoch(sess, ops, train_writer):
     
     log_string('----')
     current_data, current_label, _ = provider.shuffle_data(train_data[:,0:NUM_POINT,:], train_label) 
+    print(current_data.shape)
     
     file_size = current_data.shape[0]
     num_batches = file_size // BATCH_SIZE
