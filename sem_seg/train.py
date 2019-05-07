@@ -88,6 +88,8 @@ train_data = data_batches[train_idxs,...]
 train_label = label_batches[train_idxs]
 test_data = data_batches[test_idxs,...]
 test_label = label_batches[test_idxs]
+del data_batches
+del label_batches
 print(train_data.shape, train_label.shape)
 print(test_data.shape, test_label.shape)
 
