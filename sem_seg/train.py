@@ -203,7 +203,7 @@ def train_one_epoch(sess, ops, train_writer):
     global train_data
     global train_label
     log_string('----')
-    train_data, train_label, _ = provider.shuffle_data(train_data[:,0:NUM_POINT,:], train_label) 
+    #train_data, train_label, _ = provider.shuffle_data(train_data[:,0:NUM_POINT,:], train_label) 
     
     file_size = train_data.shape[0]
     num_batches = file_size // BATCH_SIZE
