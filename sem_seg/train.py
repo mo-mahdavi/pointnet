@@ -89,6 +89,8 @@ train_label = label_batches[train_idxs]
 test_data = data_batches[test_idxs,...]
 test_label = label_batches[test_idxs]
 del data_batches
+del data_batch
+del label_batch
 del label_batches
 print(train_data.shape, train_label.shape)
 print(test_data.shape, test_label.shape)
@@ -200,10 +202,9 @@ def train_one_epoch(sess, ops, train_writer):
     is_training = True
     
     log_string('----')
-    current_data, current_label, _ = provider.shuffle_data(train_data[:,0:NUM_POINT,:], train_label) 
-    print(current_data.shape)
+    #current_data, current_label, _ = provider.shuffle_data(train_data[:,0:NUM_POINT,:], train_label) 
     
-    file_size = current_data.shape[0]
+    file_size = train_data.shape[0]
     num_batches = file_size // BATCH_SIZE
     
     total_correct = 0
@@ -216,14 +217,14 @@ def train_one_epoch(sess, ops, train_writer):
         start_idx = batch_idx * BATCH_SIZE
         end_idx = (batch_idx+1) * BATCH_SIZE
         
-        feed_dict = {ops['pointclouds_pl']: current_data[start_idx:end_idx, :, :],
-                     ops['labels_pl']: current_label[start_idx:end_idx],
+        feed_dict = {ops['pointclouds_pl']: train_data[start_idx:end_idx, :, :],
+                     ops['labels_pl']: train_label[start_idx:end_idx],
                      ops['is_training_pl']: is_training,}
         summary, step, _, loss_val, pred_val = sess.run([ops['merged'], ops['step'], ops['train_op'], ops['loss'], ops['pred']],
                                          feed_dict=feed_dict)
         train_writer.add_summary(summary, step)
         pred_val = np.argmax(pred_val, 2)
-        correct = np.sum(pred_val == current_label[start_idx:end_idx])
+        correct = np.sum(pred_val == train_label[start_idx:end_idx])
         total_correct += correct
         total_seen += (BATCH_SIZE*NUM_POINT)
         loss_sum += loss_val
